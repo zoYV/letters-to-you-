@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>For You, Every Day</title>
+<title>Only For You</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -10,7 +10,7 @@ body{
   margin:0;
   font-family:'Segoe UI',sans-serif;
   background:linear-gradient(135deg,#ff8fa3,#ffc2d1);
-  color:#fff;
+  color:white;
   text-align:center;
   overflow-x:hidden;
 }
@@ -50,6 +50,13 @@ button{
 }
 button:hover{background:#ff1f5a;}
 
+.countdown{
+  margin:15px 0;
+  font-size:15px;
+  line-height:1.6;
+  opacity:0.95;
+}
+
 .popup{
   position:fixed;
   inset:0;
@@ -71,6 +78,7 @@ button:hover{background:#ff1f5a;}
   from{opacity:0;transform:scale(0.85);}
   to{opacity:1;transform:scale(1);}
 }
+
 .heart{
   position:fixed;
   top:-20px;
@@ -89,8 +97,15 @@ button:hover{background:#ff1f5a;}
 <div class="container">
   <div class="card">
     <h2>A Letter For Today</h2>
+
+    <div class="countdown">
+      Countdown to your day 🤍<br>
+      <span id="timer">Loading…</span>
+    </div>
+
     <p id="dateText"></p>
     <p id="hintText"></p>
+
     <input type="password" id="password" placeholder="Enter today’s password">
     <br>
     <button onclick="unlock()">Open</button>
@@ -105,56 +120,35 @@ button:hover{background:#ff1f5a;}
 </div>
 
 <script>
-/* ===== DAILY LETTERS ===== */
+/* ================= LETTER DATABASE ================= */
 const letters = {
   "2025-12-23":{
     password:"pariii",
     hint:"The name I say when I smile alone.",
-    text:"Today doesn’t need anything big 💗\nJust this you matter, even on quiet days 🌙
-      Just reminders that you are chosen, and held, even from a distance 🤍
+    text:`Today doesn’t need anything big 💗
+
+Just this — you matter, even on quiet days 🌙
+
+Just reminders that you are chosen, and held, even from a distance 🤍
+
 This is only the first letter.
-There are many more, and each one carries you a little closer to my heart"
-  },
-  "2025-12-24":{
-    password:"home",
-    hint:"Where I rest without trying.",
-    text:"Some people calm the noise 🫶\nYou do that just by existing 🤍"
-  },
-  "2025-12-25":{
-    password:"firsthug",
-    hint:"A moment that stayed longer than time.",
-    text:"There are hugs that end…\nand then there’s the one that still lives in me 🫂"
-  },
-  "2025-12-26":{
-    password:"safe",
-    hint:"How my heart feels with you.",
-    text:"If the world feels heavy today 🌧️\nremember you’re not alone 🤍"
-  },
-  "2025-12-27":{
-    password:"mine",
-    hint:"Not possession. Feeling.",
-    text:"You’re not something I hold ✨\nYou’re something I choose, again and again 🤍"
-  },
-  "2025-12-28":{
-    password:"attehouse",
-    hint:"A place that feels warmer in memory.",
-    text:"Some places stay with us 🏠\nNot because of walls — because of moments 💭"
-  },
-  "2025-12-29":{
-    password:"always",
-    hint:"What I do, even silently.",
-    text:"Even when I don’t speak much 🌙\nmy heart still walks toward you 🤍"
+There are many more, and each one carries you a little closer to my heart 💫`
   },
 
-  /* 🎂 FINAL DAY */
   "2026-03-05":{
     password:"mygirl",
     hint:"Who you are. Always.",
-    text:"Happy Birthday 🤍🎂\n\nI waited a year to say this properly.\nYou are my soft place, my fire, my home.\nToday is yours — always was, always will be 💗"
+    text:`Happy Birthday 🤍
+
+I didn’t rush this.
+I waited — day by day — to say it the right way.
+
+You are my soft place, my fire, my home.
+Today is yours. Always was. Always will be 💗`
   }
 };
 
-/* ===== DATE LOGIC ===== */
+/* ================= DATE DISPLAY ================= */
 const today = new Date().toISOString().split("T")[0];
 document.getElementById("dateText").innerText = "Date: " + today;
 
@@ -166,6 +160,7 @@ if(letters[today]){
     "No letter unlocked today.";
 }
 
+/* ================= UNLOCK LETTER ================= */
 function unlock(){
   const input = document.getElementById("password").value;
   if(!letters[today]){
@@ -185,7 +180,32 @@ function closePopup(){
   document.getElementById("popup").style.display="none";
 }
 
-/* ===== FALLING HEARTS ===== */
+/* ================= COUNTDOWN TIMER ================= */
+const targetDate = new Date("March 5, 2026 00:00:00").getTime();
+
+function updateCountdown(){
+  const now = new Date().getTime();
+  const distance = targetDate - now;
+
+  if(distance <= 0){
+    document.getElementById("timer").innerText =
+      "It’s today 🤍";
+    return;
+  }
+
+  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+  document.getElementById("timer").innerText =
+    `${days} days • ${hours} hrs • ${minutes} mins • ${seconds} secs`;
+}
+
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+/* ================= FALLING HEARTS ================= */
 setInterval(()=>{
   const h=document.createElement("div");
   h.className="heart";
