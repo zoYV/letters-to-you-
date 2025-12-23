@@ -1,1 +1,198 @@
-# letters-to-you-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For You, Every Day</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(135deg,#ff8fa3,#ffc2d1);
+  color:#fff;
+  text-align:center;
+  overflow-x:hidden;
+}
+.container{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+.card{
+  background:rgba(255,255,255,0.18);
+  backdrop-filter:blur(8px);
+  border-radius:22px;
+  padding:28px;
+  max-width:420px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.25);
+}
+h2{margin-top:0;}
+input{
+  padding:12px;
+  width:80%;
+  border-radius:20px;
+  border:none;
+  font-size:16px;
+  text-align:center;
+}
+button{
+  margin-top:16px;
+  padding:12px 26px;
+  border:none;
+  border-radius:25px;
+  background:#ff3b6f;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+button:hover{background:#ff1f5a;}
+
+.popup{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+.popup-content{
+  background:#fff;
+  color:#ff3b6f;
+  padding:30px;
+  border-radius:22px;
+  max-width:85%;
+  animation:fadeIn 0.6s ease;
+  white-space:pre-line;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:scale(0.85);}
+  to{opacity:1;transform:scale(1);}
+}
+.heart{
+  position:fixed;
+  top:-20px;
+  font-size:18px;
+  animation:fall linear infinite;
+  opacity:0.7;
+}
+@keyframes fall{
+  to{transform:translateY(110vh);opacity:0;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="card">
+    <h2>A Letter For Today</h2>
+    <p id="dateText"></p>
+    <p id="hintText"></p>
+    <input type="password" id="password" placeholder="Enter today’s password">
+    <br>
+    <button onclick="unlock()">Open</button>
+  </div>
+</div>
+
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <p id="letterText"></p>
+    <button onclick="closePopup()">Close</button>
+  </div>
+</div>
+
+<script>
+/* ===== DAILY LETTERS ===== */
+const letters = {
+  "2025-12-23":{
+    password:"pariii",
+    hint:"The name I say when I smile alone.",
+    text:"Today doesn’t need anything big 💗\nJust this — you matter, even on quiet days 🌙"
+  },
+  "2025-12-24":{
+    password:"home",
+    hint:"Where I rest without trying.",
+    text:"Some people calm the noise 🫶\nYou do that just by existing 🤍"
+  },
+  "2025-12-25":{
+    password:"firsthug",
+    hint:"A moment that stayed longer than time.",
+    text:"There are hugs that end…\nand then there’s the one that still lives in me 🫂"
+  },
+  "2025-12-26":{
+    password:"safe",
+    hint:"How my heart feels with you.",
+    text:"If the world feels heavy today 🌧️\nremember you’re not alone 🤍"
+  },
+  "2025-12-27":{
+    password:"mine",
+    hint:"Not possession. Feeling.",
+    text:"You’re not something I hold ✨\nYou’re something I choose, again and again 🤍"
+  },
+  "2025-12-28":{
+    password:"attehouse",
+    hint:"A place that feels warmer in memory.",
+    text:"Some places stay with us 🏠\nNot because of walls — because of moments 💭"
+  },
+  "2025-12-29":{
+    password:"always",
+    hint:"What I do, even silently.",
+    text:"Even when I don’t speak much 🌙\nmy heart still walks toward you 🤍"
+  },
+
+  /* 🎂 FINAL DAY */
+  "2026-03-05":{
+    password:"mygirl",
+    hint:"Who you are. Always.",
+    text:"Happy Birthday 🤍🎂\n\nI waited a year to say this properly.\nYou are my soft place, my fire, my home.\nToday is yours — always was, always will be 💗"
+  }
+};
+
+/* ===== DATE LOGIC ===== */
+const today = new Date().toISOString().split("T")[0];
+document.getElementById("dateText").innerText = "Date: " + today;
+
+if(letters[today]){
+  document.getElementById("hintText").innerText =
+    "Hint: " + letters[today].hint;
+}else{
+  document.getElementById("hintText").innerText =
+    "No letter unlocked today.";
+}
+
+function unlock(){
+  const input = document.getElementById("password").value;
+  if(!letters[today]){
+    alert("Not today 🤍");
+    return;
+  }
+  if(input === letters[today].password){
+    document.getElementById("letterText").innerText =
+      letters[today].text;
+    document.getElementById("popup").style.display="flex";
+  }else{
+    alert("That’s not it… try again 🤍");
+  }
+}
+
+function closePopup(){
+  document.getElementById("popup").style.display="none";
+}
+
+/* ===== FALLING HEARTS ===== */
+setInterval(()=>{
+  const h=document.createElement("div");
+  h.className="heart";
+  h.innerText="💗";
+  h.style.left=Math.random()*100+"vw";
+  h.style.animationDuration=4+Math.random()*3+"s";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),7000);
+},500);
+</script>
+
+</body>
+</html>
