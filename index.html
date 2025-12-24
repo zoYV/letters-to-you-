@@ -7,13 +7,20 @@
 
 <style>
 :root{
-  --bg1:#ffb3ba;
-  --bg2:#ffd1dc;
-  --card:rgba(255,255,255,0.22);
+  --bg1:#ff9a9e;
+  --bg2:#fad0c4;
+  --card:rgba(255,255,255,0.15);
   --text:#ffffff;
+}
+body.night{
+  --bg1:#0f2027;
+  --bg2:#203a43;
+  --card:rgba(255,255,255,0.08);
+  --text:#f2f2f2;
 }
 body{
   margin:0;
+  font-family:'Segoe UI',sans-serif;
   background:linear-gradient(135deg,var(--bg1),var(--bg2));
   color:var(--text);
   min-height:100vh;
@@ -22,88 +29,92 @@ body{
   align-items:center;
   text-align:center;
   overflow:hidden;
-  font-family:'Segoe UI',sans-serif;
+  transition:background .6s;
 }
-
 .card{
   background:var(--card);
-  padding:26px 24px 30px;
-  border-radius:26px;
-  max-width:390px;
+  padding:25px;
+  border-radius:20px;
+  max-width:380px;
   width:90%;
-  box-shadow:0 18px 45px rgba(0,0,0,0.25);
-  backdrop-filter:blur(12px);
+  box-shadow:0 10px 30px rgba(0,0,0,0.25);
   position:relative;
   z-index:2;
 }
-
-h1{
-  margin:8px 0 6px;
-  font-size:22px;
-  letter-spacing:1.4px;
+.toggle{
+  position:absolute;
+  top:12px;
+  right:14px;
+  font-size:18px;
+  cursor:pointer;
 }
-
-.countdown{
-  margin:12px 0 16px;
-  font-size:16px;
-  letter-spacing:1px;
-  opacity:0.9;
-}
-
-input{
-  padding:11px;
-  border:none;
-  border-radius:22px;
-  width:82%;
-  text-align:center;
-  font-size:16px;
-  margin-top:8px;
-}
-
-button{
-  margin-top:12px;
-  padding:11px 26px;
-  border:none;
-  border-radius:26px;
-  background:#ff3f78;
-  color:white;
-  font-size:16px;
-}
-
-.name{
-  font-size:23px;
-  font-weight:700;
-  margin-top:6px;
-  letter-spacing:2px;
-}
-
-/* ✅ REAL SPACING — THIS WILL SHOW */
-.letter{
-  margin-top:22px;
-  font-family:'Georgia','Times New Roman',serif;
-  font-size:17px;
-  line-height:2.2;
-  letter-spacing:2.2px;
-  word-spacing:7px;
-  text-align:center;
-}
-
 .hidden{display:none;}
-
-.hint{
-  margin-top:10px;
-  font-size:13px;
-  letter-spacing:1px;
-  opacity:0.85;
+.shake{animation:shake .4s;}
+@keyframes shake{
+  0%{transform:translateX(0);}
+  25%{transform:translateX(-6px);}
+  50%{transform:translateX(6px);}
+  75%{transform:translateX(-6px);}
+  100%{transform:translateX(0);}
+}
+.countdown{margin:15px 0;font-size:18px;font-weight:600;}
+input{
+  padding:10px;border:none;border-radius:20px;
+  width:80%;text-align:center;font-size:16px;margin-top:10px;
+}
+button{
+  margin-top:10px;padding:10px 22px;border:none;
+  border-radius:22px;background:#ff2f6d;color:white;
+  font-size:16px;animation:pulse 1.6s infinite;
+}
+@keyframes pulse{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.06);}
+  100%{transform:scale(1);}
+}
+.name{
+  font-size:22px;font-weight:700;margin-top:10px;
+  animation:fadeIn 1.5s ease;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.letter{
+  margin-top:15px;
+  white-space:pre-line;
+  font-size:16px;
+  line-height:1.6;
+  min-height:120px;
+}
+.hint{font-size:13px;opacity:.8;margin-top:8px;}
+.history{
+  margin-top:15px;
+  font-size:14px;
+  cursor:pointer;
+  opacity:.85;
+}
+.heart{
+  position:fixed;
+  bottom:-20px;
+  font-size:18px;
+  animation:floatUp linear forwards;
+  z-index:1;
+}
+@keyframes floatUp{
+  from{transform:translateY(0);opacity:1;}
+  to{transform:translateY(-110vh);opacity:0;}
 }
 </style>
 </head>
 
 <body>
 
-<div class="card">
+<div class="card" id="card">
+  <div class="toggle" onclick="toggleTheme()">🌙</div>
+
   <h1>💌 A Letter For Today</h1>
-  <div class="countdown" id="countdown"></div>
+  <div class="countdown" id="countdown">Counting down…</div>
 
   <div id="lock">
     <input type="password" id="password" placeholder="Password">
@@ -114,39 +125,108 @@ button{
 
   <div id="content" class="hidden">
     <div class="name">pariiiiii 💖</div>
-    <p id="letter" class="letter"></p>
+    <div id="letter" class="letter"></div>
+    <div class="history" onclick="showHistory()">💌 View past letters</div>
   </div>
 </div>
 
 <script>
-/* RESET STATE EVERY LOAD */
-document.getElementById("content").classList.add("hidden");
-document.getElementById("lock").classList.remove("hidden");
+/* 🌗 THEME */
+function autoTheme(){
+  const h=new Date().getHours();
+  if(localStorage.theme){
+    document.body.classList.toggle("night",localStorage.theme==="night");
+  }else{
+    document.body.classList.toggle("night",h<6||h>=18);
+  }
+}
+function toggleTheme(){
+  document.body.classList.toggle("night");
+  localStorage.theme=document.body.classList.contains("night")?"night":"day";
+}
+autoTheme();
 
 /* PASSWORD */
 const NAME_PREFIX="par";
 const nowIST=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
 const day=nowIST.getDate();
 const DAILY_PASSWORD=`${NAME_PREFIX}${day}`;
+const today=nowIST.toISOString().split("T")[0];
+let attempts=0;
 
-const letterText =
-`I know today may feel ordinary to the world,
-but to me, it matters because you exist 💗`;
+/* LETTERS */
+const special={
+"2025-12-24":`I know today may feel ordinary to the world,
+but to me, it matters because you exist 💗`,
+"2026-03-05":`Happy Birthday, my love 🎂💖`
+};
 
+function dailyLetter(){
+return `Another day closer to you 💗
+No matter how today feels,
+you are loved 🤍`;
+}
+
+/* TYPEWRITER */
+function type(text,el){
+  el.innerText="";
+  let i=0;
+  const t=setInterval(()=>{
+    el.innerText+=text.charAt(i++);
+    if(i>=text.length)clearInterval(t);
+  },35);
+}
+
+/* HEARTS */
+function hearts(){
+  setInterval(()=>{
+    const h=document.createElement("div");
+    h.className="heart";
+    h.innerText=["💗","❤️","🤍","💜"][Math.floor(Math.random()*4)];
+    h.style.left=Math.random()*100+"vw";
+    h.style.animationDuration=(4+Math.random()*3)+"s";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),7000);
+  },450);
+}
+
+/* HISTORY */
+function saveHistory(date,text){
+  const h=JSON.parse(localStorage.letters||"{}");
+  h[date]=text;
+  localStorage.letters=JSON.stringify(h);
+}
+function showHistory(){
+  const h=JSON.parse(localStorage.letters||"{}");
+  alert(Object.keys(h).map(d=>`${d}\n${h[d]}`).join("\n\n"));
+}
+
+/* UNLOCK */
 function unlock(){
   const input=document.getElementById("password").value.trim();
   const hint=document.getElementById("hint");
+  const card=document.getElementById("card");
 
   if(input!==DAILY_PASSWORD){
-    hint.classList.remove("hidden");
-    hint.innerText="Hint: first three letters I call you + today’s date 🤍";
+    attempts++;
+    card.classList.add("shake");
+    setTimeout(()=>card.classList.remove("shake"),400);
+    if(attempts>=1){
+      hint.classList.remove("hidden");
+      hint.innerText="Hint: first three letters I call you + today’s date 🤍";
+    }
     return;
   }
+
+  if(navigator.vibrate)navigator.vibrate([120,60,120]);
 
   document.getElementById("lock").classList.add("hidden");
   document.getElementById("content").classList.remove("hidden");
 
-  document.getElementById("letter").innerText = letterText;
+  const text=special[today]||dailyLetter();
+  type(text,document.getElementById("letter"));
+  saveHistory(today,text);
+  hearts();
 }
 
 /* COUNTDOWN */
@@ -155,7 +235,8 @@ const cd=document.getElementById("countdown");
 setInterval(()=>{
   const n=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
   const d=target-n;
-  cd.innerText = d>0 ? `${Math.floor(d/86400000)} days 💕` : "It’s your day 💖";
+  if(d<=0){cd.innerText="It’s your day 💖";return;}
+  cd.innerText=`${Math.floor(d/86400000)} days 💕`;
 },1000);
 </script>
 
