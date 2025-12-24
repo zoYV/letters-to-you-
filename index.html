@@ -30,10 +30,8 @@ body{
   text-align:center;
   overflow:hidden;
   font-family:'Segoe UI',sans-serif;
-  transition:background 0.6s ease;
 }
 
-/* CARD */
 .card{
   background:var(--card);
   padding:26px 24px 30px;
@@ -46,25 +44,20 @@ body{
   z-index:2;
 }
 
-/* THEME TOGGLE */
 .toggle{
   position:absolute;
   top:14px;
   right:16px;
   font-size:18px;
   cursor:pointer;
-  opacity:0.85;
 }
 
-/* TITLE */
 h1{
   margin:8px 0 6px;
   font-size:22px;
   letter-spacing:1.4px;
-  font-weight:600;
 }
 
-/* COUNTDOWN */
 .countdown{
   margin:12px 0 16px;
   font-size:16px;
@@ -72,7 +65,6 @@ h1{
   opacity:0.9;
 }
 
-/* INPUT */
 input{
   padding:11px;
   border:none;
@@ -84,7 +76,6 @@ input{
   outline:none;
 }
 
-/* BUTTON */
 button{
   margin-top:12px;
   padding:11px 26px;
@@ -96,7 +87,6 @@ button{
   letter-spacing:1px;
 }
 
-/* NAME */
 .name{
   font-size:23px;
   font-weight:700;
@@ -104,23 +94,17 @@ button{
   letter-spacing:2px;
 }
 
-/* 💌 LETTER — FINAL FIX */
 .letter{
   margin-top:22px;
   white-space:pre-line;
-
-  /* 🔥 THIS IS THE FIX 🔥 */
   font-family:'Georgia','Times New Roman',serif;
   font-size:17px;
   line-height:2.1;
   letter-spacing:1.8px;
   word-spacing:6px;
-
-  font-weight:400;
   min-height:140px;
 }
 
-/* HISTORY */
 .history{
   margin-top:18px;
   font-size:14px;
@@ -129,8 +113,8 @@ button{
   cursor:pointer;
 }
 
-/* HELPERS */
 .hidden{display:none;}
+
 .hint{
   margin-top:10px;
   font-size:13px;
@@ -138,7 +122,15 @@ button{
   opacity:0.8;
 }
 
-/* HEARTS */
+.shake{animation:shake .4s;}
+@keyframes shake{
+  0%{transform:translateX(0);}
+  25%{transform:translateX(-6px);}
+  50%{transform:translateX(6px);}
+  75%{transform:translateX(-6px);}
+  100%{transform:translateX(0);}
+}
+
 .heart{
   position:fixed;
   bottom:-20px;
@@ -150,21 +142,12 @@ button{
   from{transform:translateY(0);opacity:1;}
   to{transform:translateY(-110vh);opacity:0;}
 }
-
-/* MOBILE */
-@media(max-width:420px){
-  .letter{
-    font-size:16px;
-    letter-spacing:2px;
-    word-spacing:6.5px;
-  }
-}
 </style>
 </head>
 
 <body>
 
-<div class="card">
+<div class="card" id="card">
   <div class="toggle" onclick="toggleTheme()">🌙</div>
 
   <h1>💌 A Letter For Today</h1>
@@ -196,6 +179,7 @@ const nowIST=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"
 const day=nowIST.getDate();
 const DAILY_PASSWORD=`${NAME_PREFIX}${day}`;
 const today=nowIST.toISOString().split("T")[0];
+let attempts=0;
 
 /* LETTERS */
 const special={
@@ -222,7 +206,7 @@ function type(text,el){
   let i=0;
   const t=setInterval(()=>{
     el.innerText+=text.charAt(i++);
-    if(i>=text.length)clearInterval(t);
+    if(i>=text.length) clearInterval(t);
   },32);
 }
 
@@ -247,13 +231,23 @@ function saveHistory(date,text){
 }
 function showHistory(){
   const h=JSON.parse(localStorage.letters||"{}");
-  alert(Object.keys(h).map(d=>`${d}\n\n${h[d]}`).join("\n\n——————————\n\n"));
+  alert(Object.keys(h).map(d=>`${d}\n\n${h[d]}`).join("\n\n──────────\n\n"));
 }
 
-/* UNLOCK */
+/* 🔓 FIXED UNLOCK */
 function unlock(){
   const input=document.getElementById("password").value.trim();
-  if(input!==DAILY_PASSWORD) return;
+  const card=document.getElementById("card");
+  const hint=document.getElementById("hint");
+
+  if(input!==DAILY_PASSWORD){
+    attempts++;
+    card.classList.add("shake");
+    setTimeout(()=>card.classList.remove("shake"),400);
+    hint.classList.remove("hidden");
+    hint.innerText="Hint: first three letters I call you + today’s date 🤍";
+    return;
+  }
 
   document.getElementById("lock").classList.add("hidden");
   document.getElementById("content").classList.remove("hidden");
