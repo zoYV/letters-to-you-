@@ -6,97 +6,117 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-  body{
-    margin:0;
-    font-family:'Segoe UI',sans-serif;
-    background:linear-gradient(135deg,#ff9a9e,#fad0c4);
-    color:white;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-  }
-  .card{
-    background:rgba(255,255,255,0.15);
-    padding:25px;
-    border-radius:20px;
-    max-width:380px;
-    width:90%;
-    box-shadow:0 10px 30px rgba(0,0,0,0.25);
-    transition:transform 0.2s;
-  }
-
-  /* 🔥 SHAKE ANIMATION */
-  .shake{
-    animation:shake 0.4s;
-  }
-  @keyframes shake{
-    0%{transform:translateX(0);}
-    25%{transform:translateX(-6px);}
-    50%{transform:translateX(6px);}
-    75%{transform:translateX(-6px);}
-    100%{transform:translateX(0);}
-  }
-
-  h1{margin-bottom:8px;}
-  .countdown{
-    margin:15px 0;
-    font-size:18px;
-    font-weight:600;
-  }
-  input{
-    padding:10px;
-    border:none;
-    border-radius:20px;
-    width:80%;
-    text-align:center;
-    font-size:16px;
-    margin-top:10px;
-  }
-  button{
-    margin-top:10px;
-    padding:10px 22px;
-    border:none;
-    border-radius:22px;
-    background:#ff2f6d;
-    color:white;
-    font-size:16px;
-    animation:pulse 1.6s infinite;
-  }
-
-  /* 💗 BUTTON PULSE */
-  @keyframes pulse{
-    0%{transform:scale(1);}
-    50%{transform:scale(1.06);}
-    100%{transform:scale(1);}
-  }
-
-  .letter{
-    margin-top:15px;
-    white-space:pre-line;
-    font-size:16px;
-    line-height:1.6;
-  }
-  .hidden{display:none;}
-  .muted{opacity:0.85;font-size:14px;}
-  .hint{
-    margin-top:10px;
-    font-size:13px;
-    opacity:0.8;
-  }
+:root{
+  --bg1:#ff9a9e;
+  --bg2:#fad0c4;
+  --card:rgba(255,255,255,0.15);
+  --text:#ffffff;
+}
+body.night{
+  --bg1:#0f2027;
+  --bg2:#203a43;
+  --card:rgba(255,255,255,0.08);
+  --text:#f2f2f2;
+}
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  overflow:hidden;
+  transition:background .6s;
+}
+.card{
+  background:var(--card);
+  padding:25px;
+  border-radius:20px;
+  max-width:380px;
+  width:90%;
+  box-shadow:0 10px 30px rgba(0,0,0,0.25);
+  position:relative;
+  z-index:2;
+}
+.toggle{
+  position:absolute;
+  top:12px;
+  right:14px;
+  font-size:18px;
+  cursor:pointer;
+}
+.hidden{display:none;}
+.shake{animation:shake .4s;}
+@keyframes shake{
+  0%{transform:translateX(0);}
+  25%{transform:translateX(-6px);}
+  50%{transform:translateX(6px);}
+  75%{transform:translateX(-6px);}
+  100%{transform:translateX(0);}
+}
+.countdown{margin:15px 0;font-size:18px;font-weight:600;}
+input{
+  padding:10px;border:none;border-radius:20px;
+  width:80%;text-align:center;font-size:16px;margin-top:10px;
+}
+button{
+  margin-top:10px;padding:10px 22px;border:none;
+  border-radius:22px;background:#ff2f6d;color:white;
+  font-size:16px;animation:pulse 1.6s infinite;
+}
+@keyframes pulse{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.06);}
+  100%{transform:scale(1);}
+}
+.name{
+  font-size:22px;font-weight:700;margin-top:10px;
+  animation:fadeIn 1.5s ease;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.letter{
+  margin-top:15px;
+  white-space:pre-line;
+  font-size:16px;
+  line-height:1.6;
+  min-height:120px;
+}
+.hint{font-size:13px;opacity:.8;margin-top:8px;}
+.history{
+  margin-top:15px;
+  font-size:14px;
+  cursor:pointer;
+  opacity:.85;
+}
+.heart{
+  position:fixed;
+  bottom:-20px;
+  font-size:18px;
+  animation:floatUp linear forwards;
+  z-index:1;
+}
+@keyframes floatUp{
+  from{transform:translateY(0);opacity:1;}
+  to{transform:translateY(-110vh);opacity:0;}
+}
 </style>
 </head>
 
 <body>
 
 <div class="card" id="card">
-  <h1>💌 A Letter For Today</h1>
+  <div class="toggle" onclick="toggleTheme()">🌙</div>
 
+  <h1>💌 A Letter For Today</h1>
   <div class="countdown" id="countdown">Counting down…</div>
 
   <div id="lock">
-    <p class="muted">Enter today’s password</p>
     <input type="password" id="password" placeholder="Password">
     <br>
     <button onclick="unlock()">Open 💗</button>
@@ -104,128 +124,120 @@
   </div>
 
   <div id="content" class="hidden">
-    <p id="letterStatus" class="muted"></p>
+    <div class="name">pariiiiii 💖</div>
     <div id="letter" class="letter"></div>
+    <div class="history" onclick="showHistory()">💌 View past letters</div>
   </div>
 </div>
 
 <script>
-/* 🔑 PASSWORD PREFIX */
-const NAME_PREFIX = "par";
-let attempts = 0;
+/* 🌗 THEME */
+function autoTheme(){
+  const h=new Date().getHours();
+  if(localStorage.theme){
+    document.body.classList.toggle("night",localStorage.theme==="night");
+  }else{
+    document.body.classList.toggle("night",h<6||h>=18);
+  }
+}
+function toggleTheme(){
+  document.body.classList.toggle("night");
+  localStorage.theme=document.body.classList.contains("night")?"night":"day";
+}
+autoTheme();
 
-/* 🇮🇳 IST DATE */
-const nowIST = new Date(
-  new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"})
-);
-const year = nowIST.getFullYear();
-const month = String(nowIST.getMonth()+1).padStart(2,'0');
-const dayNum = nowIST.getDate();
-const day = String(dayNum).padStart(2,'0');
-const today = `${year}-${month}-${day}`;
+/* PASSWORD */
+const NAME_PREFIX="par";
+const nowIST=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
+const day=nowIST.getDate();
+const DAILY_PASSWORD=`${NAME_PREFIX}${day}`;
+const today=nowIST.toISOString().split("T")[0];
+let attempts=0;
 
-/* 🔐 DAILY PASSWORD */
-const DAILY_PASSWORD = `${NAME_PREFIX}${dayNum}`;
-
-/* 🎯 TARGET DATE */
-const targetDate = new Date('2026-03-05T00:00:00+05:30');
-
-/* 🌸 SPECIAL LETTERS */
-const customLetters = {
-  "2025-12-24":
-`I know today may feel ordinary to the world,
-but to me, it matters because you exist 💗
-
-Even on days when you’re quiet,
-even when you doubt yourself,
-you are still deeply loved 🌙
-
-This isn’t a grand letter.
-It’s a gentle one.
-Just me reminding you —
-you’re never alone 🤍`,
-
-  "2026-03-05":
-`Happy Birthday, my love 🎂💖
-
-All these days led to today.
-Every letter, every wait,
-every quiet reminder —
-all for you.
-
-I hope you feel how deeply
-you are loved, chosen,
-and celebrated today 🤍`
+/* LETTERS */
+const special={
+"2025-12-24":`I know today may feel ordinary to the world,
+but to me, it matters because you exist 💗`,
+"2026-03-05":`Happy Birthday, my love 🎂💖`
 };
 
-/* 💌 AUTO LETTER */
-function generateDailyLetter(){
-  return `Another day closer to you 💗
-
-I hope today treated you gently.
-And even if it didn’t,
-remember — you are deeply cared for 🌙
-
-This letter exists for one reason:
-you matter 🤍`;
+function dailyLetter(){
+return `Another day closer to you 💗
+No matter how today feels,
+you are loved 🤍`;
 }
 
-/* 🔓 UNLOCK + SHAKE */
+/* TYPEWRITER */
+function type(text,el){
+  el.innerText="";
+  let i=0;
+  const t=setInterval(()=>{
+    el.innerText+=text.charAt(i++);
+    if(i>=text.length)clearInterval(t);
+  },35);
+}
+
+/* HEARTS */
+function hearts(){
+  setInterval(()=>{
+    const h=document.createElement("div");
+    h.className="heart";
+    h.innerText=["💗","❤️","🤍","💜"][Math.floor(Math.random()*4)];
+    h.style.left=Math.random()*100+"vw";
+    h.style.animationDuration=(4+Math.random()*3)+"s";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),7000);
+  },450);
+}
+
+/* HISTORY */
+function saveHistory(date,text){
+  const h=JSON.parse(localStorage.letters||"{}");
+  h[date]=text;
+  localStorage.letters=JSON.stringify(h);
+}
+function showHistory(){
+  const h=JSON.parse(localStorage.letters||"{}");
+  alert(Object.keys(h).map(d=>`${d}\n${h[d]}`).join("\n\n"));
+}
+
+/* UNLOCK */
 function unlock(){
-  const input = document.getElementById("password").value.trim();
-  const hintBox = document.getElementById("hint");
-  const card = document.getElementById("card");
+  const input=document.getElementById("password").value.trim();
+  const hint=document.getElementById("hint");
+  const card=document.getElementById("card");
 
-  if(input !== DAILY_PASSWORD){
+  if(input!==DAILY_PASSWORD){
     attempts++;
-
     card.classList.add("shake");
     setTimeout(()=>card.classList.remove("shake"),400);
-
-    if(attempts >= 1){
-      hintBox.classList.remove("hidden");
-      hintBox.innerText =
-        "Hint: the first three letters I call you by + today’s date 🤍";
+    if(attempts>=1){
+      hint.classList.remove("hidden");
+      hint.innerText="Hint: first three letters I call you + today’s date 🤍";
     }
     return;
   }
 
+  if(navigator.vibrate)navigator.vibrate([120,60,120]);
+
   document.getElementById("lock").classList.add("hidden");
   document.getElementById("content").classList.remove("hidden");
 
-  const status = document.getElementById("letterStatus");
-  const letterBox = document.getElementById("letter");
-
-  status.innerText = "This one is for you 💕";
-
-  letterBox.innerText =
-    customLetters[today] ?? generateDailyLetter();
+  const text=special[today]||dailyLetter();
+  type(text,document.getElementById("letter"));
+  saveHistory(today,text);
+  hearts();
 }
 
-/* ⏳ COUNTDOWN */
-const countdownEl = document.getElementById("countdown");
-
-function updateCountdown(){
-  const now = new Date(
-    new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"})
-  );
-  const diff = targetDate - now;
-
-  if(diff <= 0){
-    countdownEl.innerText = "It’s your day 💖";
-    return;
-  }
-
-  const d = Math.floor(diff / (1000*60*60*24));
-  const h = Math.floor((diff / (1000*60*60)) % 24);
-  const m = Math.floor((diff / (1000*60)) % 60);
-  const s = Math.floor((diff / 1000) % 60);
-
-  countdownEl.innerText = `${d} days ${h}h ${m}m ${s}s 💕`;
-}
-
-setInterval(updateCountdown,1000);
-updateCountdown();
+/* COUNTDOWN */
+const target=new Date('2026-03-05T00:00:00+05:30');
+const cd=document.getElementById("countdown");
+setInterval(()=>{
+  const n=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
+  const d=target-n;
+  if(d<=0){cd.innerText="It’s your day 💖";return;}
+  cd.innerText=`${Math.floor(d/86400000)} days 💕`;
+},1000);
 </script>
 
 </body>
